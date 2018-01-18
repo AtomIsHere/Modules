@@ -1,0 +1,9 @@
+com/github/atomishere/modules/api/Module.class
+com/github/atomishere/modules/ModuleLoader.class
+com/github/atomishere/modules/api/CommandModule.class
+com/github/atomishere/modules/ModuleException.class
+com/github/atomishere/modules/ModulesPlugin$1.class
+com/github/atomishere/modules/api/EventModule.class
+com/github/atomishere/modules/ModuleClassLoader.class
+com/github/atomishere/modules/ModuleLoader$1.class
+com/github/atomishere/modules/ModulesPlugin.class
