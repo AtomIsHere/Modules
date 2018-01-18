@@ -33,6 +33,7 @@ cmake-build-release/
 
 # IntelliJ
 out/
+Modules.iml
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -48,3 +49,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+#target files
+Modules-Full/target
+Modules-API/target
+Example/target

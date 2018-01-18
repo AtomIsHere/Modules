@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 
 public class ModuleClass extends CommandModule {
-    protected ModuleClass() {
+    public ModuleClass() {
         super("moduleexample", "An example for the Modules plugin", "Usage: /moduleexample", new ArrayList<String>());
     }
 

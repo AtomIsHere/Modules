@@ -3,8 +3,6 @@ package com.github.atomishere.modules;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.logging.Logger;
 
 public class ModulesPlugin extends JavaPlugin {

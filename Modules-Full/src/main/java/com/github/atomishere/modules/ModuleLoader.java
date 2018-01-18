@@ -32,35 +32,34 @@ public class ModuleLoader {
     }
 
     public void loadModules() {
-        if (!modulesFile.isDirectory()) {
-            throw new ModuleException("Modules file is not a directory!");
-        }
-
         FilenameFilter filter = new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.startsWith("Module_") && name.endsWith(".jar");
             }
         };
 
-        for (File file : modulesFile.listFiles(filter)) {
-            logger.info("Loading module " + file.getName());
+        try {
+            for (File file : modulesFile.listFiles(filter)) {
+                logger.info("Loading module " + file.getName());
 
-            ModuleClassLoader loader;
-            try {
-                loader = new ModuleClassLoader(getClass().getClassLoader(), file);
-            } catch (MalformedURLException ex) {
-                for(StackTraceElement element : ex.getStackTrace()) {
-                    Bukkit.getServer().getLogger().severe(element.toString());
+                ModuleClassLoader loader;
+                try {
+                    loader = new ModuleClassLoader(getClass().getClassLoader(), file);
+                } catch (MalformedURLException ex) {
+                    for (StackTraceElement element : ex.getStackTrace()) {
+                        Bukkit.getServer().getLogger().severe(element.toString());
+                    }
+                    continue;
+                } catch (Exception ex) {
+                    for (StackTraceElement element : ex.getStackTrace()) {
+                        logger.info(element.toString());
+                    }
+                    continue;
                 }
-                continue;
-            } catch(Exception ex) {
-                for(StackTraceElement element : ex.getStackTrace()) {
-                    logger.info(element.toString());
-                }
-                continue;
+
+                modules.add(loader.getModule());
             }
-
-            modules.add(loader.getModule());
+        } catch(NullPointerException ignored) {
         }
     }
 
