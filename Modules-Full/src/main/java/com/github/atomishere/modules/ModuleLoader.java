@@ -93,7 +93,7 @@ public class ModuleLoader {
             plugin.getManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, module.getClientPacketType()) {
                 @Override
                 public void onPacketReceiving(PacketEvent event) {
-                    module.onPacketRecive(event);
+                    module.onPacketReceive(event);
                 }
             });
         }
