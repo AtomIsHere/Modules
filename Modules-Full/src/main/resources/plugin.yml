@@ -3,3 +3,4 @@ version: 1.0
 description: Load modules that add in singular features (Command, Events, etc...). Usefull if you just want to add one thing instead of making an entire plugin for it.
 author: AtomIsHere
 main: com.github.atomishere.modules.ModulesPlugin
+softdepend: [ProtocolLib]

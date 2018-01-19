@@ -1,13 +1,20 @@
 package com.github.atomishere.modules;
 
-import org.bukkit.Bukkit;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
 
 public class ModulesPlugin extends JavaPlugin {
     private ModuleLoader loader;
+
     private Logger logger = getLogger();
+
+    private boolean protocolLib = false;
+    @Getter
+    private ProtocolManager manager = null;
 
     @Override
     public void onLoad() {
@@ -17,8 +24,13 @@ public class ModulesPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        if(getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            manager = ProtocolLibrary.getProtocolManager();
+            protocolLib = true;
+        }
+
         //Load modules later modules so modules can use other plugin's API.
-        Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable() {
+        getServer().getScheduler().runTaskLater(this, new Runnable() {
             public void run() {
                 loader.registerModules();
             }
@@ -30,5 +42,9 @@ public class ModulesPlugin extends JavaPlugin {
         loader.disableModules();
         loader = null;
         logger = null;
+    }
+
+    public boolean hasProtocolLib() {
+        return protocolLib;
     }
 }
