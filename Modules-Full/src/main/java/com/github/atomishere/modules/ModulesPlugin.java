@@ -18,6 +18,9 @@ public class ModulesPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        if(!getDataFolder().exists()) {
+            getDataFolder().mkdir();
+        }
         loader = new ModuleLoader(this, getDataFolder());
         loader.loadModules();
     }
