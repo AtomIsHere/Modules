@@ -3,6 +3,7 @@ package com.github.atomishere.modules;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -22,7 +23,9 @@ public class ModulesPlugin extends JavaPlugin {
             getDataFolder().mkdir();
         }
         loader = new ModuleLoader(this, getDataFolder());
+        logger.info("Loading modules");
         loader.loadModules();
+        logger.info("Loaded modules");
     }
 
     @Override
@@ -32,10 +35,13 @@ public class ModulesPlugin extends JavaPlugin {
             protocolLib = true;
         }
 
+        Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), this);
         //Load modules later modules so modules can use other plugin's API.
         getServer().getScheduler().runTaskLater(this, new Runnable() {
             public void run() {
+                logger.info("Registering modules");
                 loader.registerModules();
+                logger.info("Registered modules");
             }
         }, 100L);
     }

@@ -3,18 +3,19 @@ package com.github.atomishere.modules;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.github.atomishere.modules.api.CommandModule;
-import com.github.atomishere.modules.api.EventModule;
-import com.github.atomishere.modules.api.Module;
-import com.github.atomishere.modules.api.PacketModule;
+import com.github.atomishere.modules.api.*;
 import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
 public class ModuleLoader {
@@ -44,21 +45,49 @@ public class ModuleLoader {
             for (File file : modulesFile.listFiles(filter)) {
                 logger.info("Loading module " + file.getName());
 
-                ModuleClassLoader loader;
+                JarFile moduleJar;
                 try {
-                    loader = new ModuleClassLoader(getClass().getClassLoader(), file);
-                } catch (MalformedURLException ex) {
-                    for (StackTraceElement element : ex.getStackTrace()) {
-                        Bukkit.getServer().getLogger().severe(element.toString());
-                    }
-                    continue;
-                } catch (Exception ex) {
-                    for (StackTraceElement element : ex.getStackTrace()) {
-                        logger.info(element.toString());
-                    }
+                    moduleJar = new JarFile(file);
+                } catch(IOException ex) {
+                    logger.warning(file.getName() + " is not a jar file.");
                     continue;
                 }
 
+                JarEntry entry = moduleJar.getJarEntry("module.properties");
+                InputStream stream;
+                try {
+                    stream = moduleJar.getInputStream(entry);
+                } catch(IOException ex) {
+                    logger.warning(file.getName() + " does not contain module.properties");
+                    ex.printStackTrace();
+                    continue;
+                }
+
+                ModuleData data;
+                try {
+                    data = new ModuleData(stream);
+                } catch(IOException ex) {
+                    logger.warning(file.getName() + " does not contain module.properties");
+                    ex.printStackTrace();
+                    continue;
+                } catch(InvalidModuleException ex) {
+                    logger.warning(file.getName() + " has an invalid module.properties");
+                    ex.printStackTrace();
+                    continue;
+                }
+
+                ModuleClassLoader loader;
+                try {
+                    loader = new ModuleClassLoader(getClass().getClassLoader(), file, data);
+                } catch (MalformedURLException ex) {
+                    ex.printStackTrace();
+                    continue;
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    continue;
+                }
+
+                logger.info("Loaded module " + data.getName());
                 modules.add(loader.getModule());
             }
         } catch(NullPointerException ignored) {
@@ -68,14 +97,19 @@ public class ModuleLoader {
     public void registerModules() {
         for(Module module : modules) {
             if(module instanceof CommandModule) {
+                logger.info("Registering command module " + module.getData());
                 registerCommand((CommandModule) module);
-                logger.warning("Loading command module ");
+                logger.info("Registered command module " + module.getData());
             } else if(module instanceof EventModule) {
+                logger.info("Registering event module " + module.getData());
                 Bukkit.getServer().getPluginManager().registerEvents((EventModule) module, plugin);
+                logger.info("Registered event module " + module.getData());
             } else if(plugin.hasProtocolLib() && module instanceof PacketModule) {
+                logger.info("Registering packet module " + module.getData());
                 registerPacketModule((PacketModule) module);
+                logger.info("Registered packet module " + module.getData());
             } else if(!plugin.hasProtocolLib() && module instanceof PacketModule) {
-                logger.warning("Tried to load a Packet Module while ProtocolLib is not installed!");
+                logger.severe("Tried to register a Packet Module while ProtocolLib is not installed!");
             }
         }
     }

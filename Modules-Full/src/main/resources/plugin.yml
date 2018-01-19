@@ -1,0 +1,7 @@
+name: Modules
+version: 1.1
+main: com.github.atomishere.modules
+softdepend: ProtocolLib
+description: Add single bukkit features without having to make an entire plugin
+authors: []
+author: AtomIsHere
